@@ -238,6 +238,42 @@ fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRd5_csNX0ZuiZf6XbWtPBsUO
         });
     })
     .catch(error => console.error("Erreur lors du chargement du CSV :", error));
+fetch(csvUrl)
+    .then(response => response.text())
+    .then(data => {
+        const rows = data.split("\n");
+
+        // Affiche la première ligne pour vérifier les colonnes
+        const headers = rows.shift().split(",").map(header => header.trim().replace('\r', ''));
+        console.log("Headers:", headers);
+
+        rows.forEach(row => {
+            const columns = row.split(",").map(value => value.trim());
+            console.log("Columns:", columns);
+
+            const nom = columns[headers.indexOf("Nom")] || "Nom inconnu";
+            const prenom = columns[headers.indexOf("Prénom")] || "Prénom inconnu";
+            const promotion = columns[headers.indexOf("NomDePromotion")] || "Promotion inconnue";
+            const annee = columns[headers.indexOf("AnnéeDiplôme")] || "Année inconnue";
+            const campus = columns[headers.indexOf("Campus")] || "Campus inconnu";
+            const photo = columns[headers.indexOf("Photo")] || "https://via.placeholder.com/200";
+            const linkedin = columns[headers.indexOf("Linkedin")] || "#";
+
+            console.log(`Nom: ${nom}, Prénom: ${prenom}, Promotion: ${promotion}`);
+
+            const card = `
+                <div class="card" data-category="${annee}" data-campus="${campus}">
+                    <img src="${photo}" alt="Photo de ${prenom} ${nom}">
+                    <h3>${prenom} ${nom}</h3>
+                    <p>Promotion: ${promotion}</p>
+                    <p>Année du diplôme: ${annee}</p>
+                    <button onclick="window.open('${linkedin}')">Voir Profil LinkedIn</button>
+                </div>
+            `;
+            document.querySelector('.cards').innerHTML += card;
+        });
+    })
+    .catch(error => console.error("Erreur lors du chargement du CSV :", error));
 
             
     </script>
