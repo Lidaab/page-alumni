@@ -205,65 +205,38 @@
     </footer>
 
     <script>
-       <script>
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRd5_csNX0ZuiZf6XbWtPBsUOOBrXoFYXZcgugzMsmIq51p2-N_EVyc6ol8pg7Mc5FSbhjVcBv3fns3/pub?gid=0&single=true&output=csv';
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRd5_csNX0ZuiZf6XbWtPBsUOOBrXoFYXZcgugzMsmIq51p2-N_EVyc6ol8pg7Mc5FSbhjVcBv3fns3/pub?gid=0&single=true&output=csv';
 
-    fetch(csvUrl)
-        .then(response => response.text())
-        .then(data => {
-            const rows = data.split("\n");
-            const headers = rows.shift().split(",").map(header => header.trim().replace('\r', ''));
-            const cardsContainer = document.querySelector('.cards');
+     fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRd5_csNX0ZuiZf6XbWtPBsUOOBrXoFYXZcgugzMsmIq51p2-N_EVyc6ol8pg7Mc5FSbhjVcBv3fns3/pub?gid=0&single=true&output=csv')
+    .then(response => response.text())
+    .then(data => {
+        const rows = data.split("\n");
 
-            rows.forEach(row => {
-                const columns = row.split(",").map(value => value.trim());
-                const nom = columns[headers.indexOf("Nom")] || "Nom inconnu";
-                const prenom = columns[headers.indexOf("Prénom")] || "Prénom inconnu";
-                const promotion = columns[headers.indexOf("NomDePromotion")] || "Promotion inconnue";
-                const annee = columns[headers.indexOf("AnnéeDiplôme")] || "Année inconnue";
-                const campus = columns[headers.indexOf("Campus")] || "Campus inconnu";
-                const job = columns[headers.indexOf("Job actuel")] || "Job inconnu";
-                const photo = columns[headers.indexOf("Photo")] || "https://via.placeholder.com/200";
-                const linkedin = columns[headers.indexOf("Linkedin")] || "#";
+        // Ajoute ce bloc pour voir les données dans la console
+        rows.forEach(row => {
+            const columns = row.split(",");
+            console.log(columns); // Affiche chaque ligne en tant que tableau
+        });
 
-                const card = `
-                    <div class="card" data-category="${annee}" data-campus="${campus}">
-                        <img src="${photo}" alt="Photo de ${prenom} ${nom}">
-                        <h3>${prenom} ${nom}</h3>
-                        <p>Promotion: ${promotion}</p>
-                        <p>Année du diplôme: ${annee}</p>
-                        <p>Job actuel: ${job}</p>
-                        <button onclick="window.open('${linkedin}')">Voir Profil LinkedIn</button>
-                    </div>
-                `;
-                cardsContainer.innerHTML += card;
-            });
+        rows.forEach(row => {
+            const columns = row.split(",");
+            const [nom, prenom, promotion, annee, campus, , , photo, linkedin] = columns;
 
-            applyFilters();
-        })
-        .catch(error => console.error("Erreur lors du chargement du CSV :", error));
+            const card = `
+                <div class="card" data-category="${annee.trim()}" data-campus="${campus.trim()}">
+                    <img src="${photo.trim()}" alt="Photo de ${prenom.trim()} ${nom.trim()}">
+                    <h3>${prenom.trim()} ${nom.trim()}</h3>
+                    <p>Promotion: ${promotion.trim()}</p>
+                    <p>Année du diplôme: ${annee.trim()}</p>
+                    <button onclick="window.open('${linkedin.trim()}')">Voir Profil LinkedIn</button>
+                </div>
+            `;
+            document.querySelector('.cards').innerHTML += card;
+        });
+    })
+    .catch(error => console.error("Erreur lors du chargement du CSV :", error));
 
-    function applyFilters() {
-        const yearFilter = document.getElementById('filterYear');
-        const campusFilter = document.getElementById('filterCampus');
 
-        yearFilter.addEventListener('change', filterCards);
-        campusFilter.addEventListener('change', filterCards);
-
-        function filterCards() {
-            const selectedYear = yearFilter.value;
-            const selectedCampus = campusFilter.value;
-
-            document.querySelectorAll('.card').forEach(card => {
-                const matchesYear = (selectedYear === 'all' || card.getAttribute('data-category') === selectedYear);
-                const matchesCampus = (selectedCampus === 'all' || card.getAttribute('data-campus').trim() === selectedCampus);
-                card.style.display = matchesYear && matchesCampus ? 'block' : 'none';
-            });
-        }
-    }
-</script>
-
-            
     </script>
 </body>
 </html>
